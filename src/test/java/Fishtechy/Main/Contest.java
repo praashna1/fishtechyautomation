@@ -42,7 +42,10 @@ public class Contest extends Capability {
         loginPage.CameraGuide();
 
         contest.ContestStep();
-        contest.invite("aman");
+        //contest.invite("aman");
+        // multiple names to invite
+        List<String> invitees = Arrays.asList("aman1", "aman2", "aman3");
+        contest.invite(invitees);
         contest.logout();
 
         // Remaining users: accept invite + upload
@@ -54,8 +57,11 @@ public class Contest extends Capability {
             contest.withoutPermission();
             contest.acceptInvite();
             contest.upload();
+            // each user uploads different video (i-1 because user[1] gets video[0])
+           // contest.upload(i - 1);
             contest.logout();
         }
+
 
     }
 }

@@ -14,6 +14,7 @@ import io.appium.java_client.android.AndroidDriver;
 
 import java.time.Duration;
 import java.util.Collections;
+import java.util.List;
 
 
 //using android driver for keyboard escape
@@ -105,12 +106,14 @@ public class ContestCreate {
         wait.until(ExpectedConditions.elementToBeClickable(AppiumBy.accessibilityId("Save"))).click();
         wait.until(ExpectedConditions.elementToBeClickable(AppiumBy.accessibilityId("Next"))).click();
     }
-    public void invite(String inviteeName) {
+    public void invite(List<String> inviteeNames) {
         WebDriverWait shortWait = new WebDriverWait(driver, Duration.ofSeconds(15));
 
+        for (String inviteeName : inviteeNames) {
         //to invite players
         WebElement invite = wait.until(ExpectedConditions.elementToBeClickable(AppiumBy.xpath("//android.widget.EditText")));
         invite.click();
+        invite.clear();
         invite.sendKeys(inviteeName);
 
         wait.until(ExpectedConditions.elementToBeClickable(AppiumBy.xpath("(//android.widget.Button[@content-desc=\"Invite\"])[1]"))).click();
@@ -119,9 +122,14 @@ public class ContestCreate {
             System.out.println("Keyboard hidden successfully");
 
         // Wait until toast msg disappears
-        shortWait.until(ExpectedConditions.invisibilityOfElementLocated(
-                AppiumBy.xpath("//android.view.View[contains(@content-desc,'Invitation successfully sent')]")));
-
+            try {
+                shortWait.until(ExpectedConditions.invisibilityOfElementLocated(
+                        AppiumBy.xpath("//android.view.View[contains(@content-desc,'Invitation successfully sent')]")));
+            } catch (TimeoutException e) {
+                System.out.println("Toast message did not disappear in time for: " + inviteeName);
+            }
+        }
+        //after all invitee--click done
         wait.until(ExpectedConditions.elementToBeClickable(
                 AppiumBy.xpath("//android.widget.Button[@content-desc=\"Done\"]"))).click();
         //completed till here
@@ -164,10 +172,24 @@ public class ContestCreate {
         wait.until(ExpectedConditions.elementToBeClickable(
                 AppiumBy.xpath("//android.widget.FrameLayout[@resource-id=\"android:id/content\"]/android.widget.FrameLayout/android.widget.FrameLayout/android.view.View/android.view.View/android.view.View[1]/android.view.View[1]/android.view.View[3]/android.view.View[1]/android.widget.ImageView")
         )).click();
-        wait.until(ExpectedConditions.elementToBeClickable(AppiumBy.xpath("//android.widget.ImageView[@content-desc=\"Measure\"]"))).click();
-        wait.until(ExpectedConditions.elementToBeClickable(AppiumBy.id("measurement_tutorial_popup_close_button_button"))).click();
+         wait.until(ExpectedConditions.elementToBeClickable(AppiumBy.xpath("//android.widget.ImageView[@content-desc=\"Measure\"]"))).click();
+        wait.until(ExpectedConditions.elementToBeClickable(AppiumBy.xpath("//android.widget.Button[@resource-id=\"measurement_tutorial_popup_close_button_button\"]"))).click();
 
         wait.until(ExpectedConditions.presenceOfElementLocated(AppiumBy.xpath("(//android.widget.ImageView[@content-desc=\"00:04\"])[3]"))).click();
+
+        //  Instead of fixed index [3], pick based on parameter
+        //add int videoIndex in field
+//        List<WebElement> videos = wait.until(
+//                ExpectedConditions.presenceOfAllElementsLocatedBy(
+//                        AppiumBy.xpath("//android.widget.ImageView[contains(@content-desc, ':')]")
+//                )
+//        );
+//
+//        if (videoIndex < videos.size()) {
+//            videos.get(videoIndex).click();
+//        } else {
+//            throw new RuntimeException("Video index " + videoIndex + " not available. Found only " + videos.size());
+//        }
 
 
         wait.until(ExpectedConditions.elementToBeClickable(AppiumBy.accessibilityId("Measure Now"))).click();
